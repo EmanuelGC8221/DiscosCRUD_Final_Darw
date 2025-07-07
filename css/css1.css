@@ -1,0 +1,304 @@
+:root {
+    --color-primario: #151719;
+    --color-secundario: #3f4b48;
+    --color-terciario: #7d8181;
+    --color-cuarto: #a9afb2;
+    --color-quinto: #d0d4d7;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body { 
+    /* este sans-serif es un respaldo */
+    font-family: 'Bebas Neue', sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    background-color: var(--color-primario);
+    color: var(--color-quinto);
+}
+
+.header {
+
+    background-color: var(--color-primario);
+    padding: 60px 20px;
+    margin-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    border-bottom: 2px solid var(--color-terciario);
+}
+
+.header-titulo-logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+#tituloWeb {
+    font-size: 90px;
+    margin: 0;
+    width: auto;
+}
+
+.notaLogo img {
+    width: 400px;
+    height: auto;
+    margin-right: 40px;
+}
+
+.custom-btn {
+    font-size: 18px;              /* Texto más grande */
+    padding: 12px 24px;           /* Botón más grande */
+    background-color: transparent; /* Fondo como el del header */
+    color: white;                 /* Texto blanco */
+    border: 2px solid white;      /* Borde blanco */
+    border-radius: 6px;
+    transition: all 0.3s ease;    /* Suavidad al pasar el mouse */
+    box-shadow: none;
+}
+
+.custom-btn:hover {
+    color: #00bfff;               /* Texto celeste al pasar el mouse */
+    border-color: #00bfff;        /* Borde celeste */
+    box-shadow: 0 0 12px #00bfff; /* Efecto del brillito magico celeste */
+    background-color: rgba(0, 191, 255, 0.1); /* Sutil brillo de fondo */
+}
+
+.main-content-seleccion {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+}
+
+.background-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.form-overlay {
+  position: relative;
+  z-index: 1;
+  background-color: rgba(21, 23, 25, 0.4); /* más transparencia para efecto vidrio */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); 
+  width: 35%;
+  padding: 40px 30px;
+  color: var(--color-quinto);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  overflow-y: auto;
+  border-radius: 16px; /* bordes redondeados */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* borde sutil tipo cristal (casi que no puto)*/
+}
+
+.form-section{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-section input[type="text"],
+.form-section input[type="text"],
+.form-section input[type="submit"]{
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.form-section input[type="submit"]{
+    background-color: transparent;
+    border: 2px solid white;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.form-section input[type="submit"] :hover {
+    color: #00bfff;
+    border-color: #00bfff;
+    box-shadow: 0 0 10px #00bfff;
+}
+
+table.table {
+    background-color: rgba(21, 23, 25, 0.4);
+    color: white;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+table.table thead{
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+table.table th, table.table td {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+table.table tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+table.table tbody tr :hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+
+    /* solucion del maldito error */
+
+/* que todo el texto sea blanco siempre */
+.table th,
+.table td {
+  color: white !important; /* Fuerza el color blanco */
+  background-color: transparent !important;
+}
+
+/* Elimina el efecto hover*/
+.table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/*mejora contraste para filas alternas*/
+.table tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* lo ultimo que falta la jodido formulario ese */
+
+.form-overlay {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 40px 30px;
+    color: white;
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    overflow-y: auto;
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-section h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.form-section input[type="text"],
+.form-section input[type="date"] {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 2px solid white;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-section input[type="text"]:focus,
+.form-section input[type="date"]:focus {
+    border-color: #00bfff;
+    box-shadow: 0 0 8px #00bfff;
+}
+
+/* el efecto ese de brillo */
+
+.form-section input[type="submit"] {
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: transparent;
+    border: 2px solid white;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3 ease;
+    margin-top: 10px;
+}
+
+.form-section input[type="submit"]:hover {
+    color: #00bfff;
+    border-color: #00bfff;
+    box-shadow: 0 0 12px #00bfff;
+    background-color: rgba(0, 191, 255, 0.1);
+}
+
+
+body::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2); /* color blanco suave */
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3); /* borde leve */
+  transition: background-color 0.3s;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 191, 255, 0.4); /* celeste al pasar el mouse*/
+}
+
+/* otro error */
+
+/* Scrollbar general */
+body::-webkit-scrollbar,
+.form-overlay::-webkit-scrollbar {
+  width: 8px;
+}
+
+body::-webkit-scrollbar-track,
+.form-overlay::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body::-webkit-scrollbar-thumb,
+.form-overlay::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: background-color 0.3s;
+}
+
+body::-webkit-scrollbar-thumb:hover,
+.form-overlay::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 191, 255, 0.4);
+}
+
+/*el estilo de Firefox */
+body,
+.form-overlay {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}

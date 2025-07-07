@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Discos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/css1.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+</head>
+
+
+<body>
+
+  <header class="header">
+    <div class="header-titulo-logo">
+      <h1 id="tituloWeb">Gestión de Discos Musicales</h1>
+      <div class="notaLogo">
+        <img src="img/Gemini_Generated_Image_r703xnr703xnr703-removebg-preview.png" alt="nota musical">
+      </div>
+    </div>
+    <div class="header-buttons">
+      <a href="indexVERSION1.html"><button type="button" class="custom-btn">Volver a Prestadores</button></a>
+      <button onclick="cargarDisco()" class="custom-btn">Cargar Discos</button>
+      <div id="loading" style="display: none;">Cargando...</div>
+    </div>
+
+  </header>
+
+  <!-- main es para separarlo del header y encapsular las tablas y todo el contenido visual -->
+  <main class="main-content-seleccion">
+    <!-- video -->
+    <video autoplay muted loop class="background-video">
+      <source src="media/6274581-uhd_3840_2160_30fps.mp4" type="video/mp4">
+      tu navegador no soporta video
+      <!-- source es para multiples fuentes de medios para el mismo contenido -->
+    </video>
+
+    <div class="form-overlay">
+      <div class="container mt-5">
+        <table id="tabla-disco" class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Título</th>
+              <th>Artista</th>
+              <th>Año</th>
+            </tr>
+          </thead>
+          <tbody id="cuerpo-tabla"></tbody>
+        </table>
+      </div>
+
+      <div id="exito" class="alert alert-success" role="alert" style="display:none;"></div>
+      <div id="error" class="alert alert-danger" role="alert" style="display:none;"></div>
+      <section class="form-section">
+        <h2>Agregar Disco</h2>
+        <form id="form-crear" onsubmit="event.preventDefault(); crearDisco();">
+          <!-- esto permite evitar que recargue la pagina y llama a la funcion javascript correspondiente -->
+          <input type="text" id="nameDisco" placeholder="titulo" required>
+          <input type="text" id="artistaDisco" placeholder="Artista" required>
+          <input type="date" id="anioDisco" required>
+          <input type="submit" value="Agregar Disco">
+        </form>
+      </section>
+
+      <section class="form-section">
+        <h2>Actualizar Disco</h2>
+        <form id="form-actualizar" onsubmit="event.preventDefault(); actualizarDisco();">
+          <input type="text" id="actualizar-id" placeholder="ID Disco" required>
+          <input type="text" id="actualizarName" placeholder="titulo" required>
+          <input type="text" id="actualizarArtista" placeholder="Artista" required>
+          <input type="date" id="actualizarAnio" required>
+          <input type="submit" value="Actualizar Disco">
+        </form>
+      </section>
+
+      <section class="form-section">
+        <h2>Eliminar Disco</h2>
+        <form id="form-eliminar" onsubmit="event.preventDefault(); eliminarPorId();">
+          <input type="text" id="eliminar-id" placeholder="ID Disco" required>
+          <input type="submit" value="Eliminar Disco">
+        </form>
+      </section>
+    </div>
+  </main>
+
+
+  <script>
+    const API_URL_dis = 'https://68657bd45b5d8d0339814df6.mockapi.io/api/v1/discos';
+
+    function mostrarMensaje(tipo, mensaje) {
+      const div = document.getElementById(tipo);
+      div.textContent = mensaje;
+      if (tipo === 'exito') {
+        div.className = 'alert alert-success';
+      } else if (tipo === 'error') {
+        div.className = 'alert alert-danger';
+      }
+      div.style.display = 'block'; // Asegura que el div sea visible
+      setTimeout(() => {
+        div.textContent = '';
+        div.style.display = 'none'; // Oculta el div después del mensaje
+      }, 5000);
+    }
+
+    async function cargarDisco() {
+      const tablaCuerpo = document.getElementById('cuerpo-tabla');
+      const errorDiv = document.getElementById('error');
+      const exitoDiv = document.getElementById('exito');
+      const loadingDiv = document.getElementById('loading');
+
+      tablaCuerpo.innerHTML = '';
+      errorDiv.textContent = '';
+      errorDiv.style.display = 'none';
+      exitoDiv.textContent = '';
+      exitoDiv.style.display = 'none';
+
+      loadingDiv.style.display = 'block';
+
+      try {
+        const respuesta = await fetch(API_URL_dis);
+        if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
+        const discos = await respuesta.json();
+
+
+
+        discos.forEach(disco => {
+          const fila = document.createElement('tr');
+          fila.innerHTML = `
+            <td>${disco.idDisco}</td>
+            <td>${disco.name}</td>
+            <td>${disco.artista}</td>
+            <td>${disco.createdAt}</td>
+          `;
+          tablaCuerpo.appendChild(fila);
+        });
+
+        mostrarMensaje('exito', 'Discos cargados correctamente');
+      } catch (error) {
+        mostrarMensaje('error', `Error al cargar Discos: ${error.message}`);
+      } finally {
+        loadingDiv.style.display = 'none'; //oculta el mensaje de cargando del final
+      }
+    }
+
+    async function crearDisco() {
+      const disco = {
+        name: document.getElementById('nameDisco').value.trim(),
+        artista: document.getElementById('artistaDisco').value.trim(),
+        createdAt: document.getElementById('anioDisco').value,
+      };
+
+      const loadingDiv = document.getElementById('loading'); // esta porqueria es para el finally
+
+      // Limpia y oculta mensajes al inicio de la operación
+      document.getElementById('error').textContent = '';
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('exito').textContent = '';
+      document.getElementById('exito').style.display = 'none';
+      loadingDiv.style.display = 'block';
+
+      try {
+        const respuesta = await fetch(API_URL_dis, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(disco)
+        });
+
+        if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
+
+        await cargarDisco();
+        document.getElementById('form-crear').reset();
+        mostrarMensaje('exito', 'Disco creado correctamente');
+      } catch (error) {
+        mostrarMensaje('error', `Error al crear el Disco: ${error.message}`);
+      } finally {
+        loadingDiv.style.display = 'none';
+      }
+    }
+
+    async function actualizarDisco() {
+      const idDisco = document.getElementById('actualizar-id').value.trim();
+      const discoActualizado = {
+        name: document.getElementById('actualizarName').value.trim(),
+        artista: document.getElementById('actualizarArtista').value.trim(),
+        createdAt: document.getElementById('actualizarAnio').value,
+      };
+
+      const loadingDiv = document.getElementById('loading'); // esto es para el finally
+
+      //Limpia y oculta mensajes al inicio
+      document.getElementById('error').textContent = '';
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('exito').textContent = '';
+      document.getElementById('exito').style.display = 'none';
+      loadingDiv.style.display = 'block';
+
+      try {
+        const respuesta = await fetch(`${API_URL_dis}/${idDisco}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(discoActualizado)
+        });
+
+        if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
+        await cargarDisco();
+        document.getElementById('form-actualizar').reset();
+        mostrarMensaje('exito', 'Disco actualizado correctamente');
+      } catch (error) {
+        mostrarMensaje('error', `Error al actualizar el disco: ${error.message}`);
+      }
+    }
+
+    // función eliminar
+    async function eliminarPorId() {
+      const id = document.getElementById('eliminar-id').value.trim();
+      if (!id) return mostrarMensaje('error', 'Debes ingresar un ID válido');
+
+
+      const loadingDiv = document.getElementById('loading');
+
+      // Limpia y oculta mensajes al inicio
+      document.getElementById('error').textContent = '';
+      document.getElementById('error').style.display = 'none';
+      document.getElementById('exito').textContent = '';
+      document.getElementById('exito').style.display = 'none';
+      loadingDiv.style.display = 'block';
+
+      try {
+        const respuesta = await fetch(`${API_URL_dis}/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (!respuesta.ok) throw new Error(`ID no encontrado o error HTTP: ${respuesta.status}`);
+
+        await cargarDisco();
+        document.getElementById('form-eliminar').reset();
+        mostrarMensaje('exito', `Prestador con ID ${id} eliminado correctamente`);
+      } catch (error) {
+        mostrarMensaje('error', `Error al eliminar: ${error.message}`);
+      } finally {
+        loadingDiv.style.display = 'none';
+      }
+    }
+
+
+
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+    integrity="sha384-7qAoOXltbVP82dhxHAUje59V5r2YsVfBafyUDxEdApLPmcdhBPg1DKg1ERo0BZlK"
+    crossorigin="anonymous"></script>
+</body>
+
+</html>

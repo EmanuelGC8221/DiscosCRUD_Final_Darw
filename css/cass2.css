@@ -1,0 +1,78 @@
+:root {
+    --color-primario: #151719;
+    --color-secundario: #3f4b48;
+    --color-terciario: #7d8181;
+    --color-cuarto: #a9afb2;
+    --color-quinto: #d0d4d7;
+    --color-acento: #00bfff;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body { 
+    /* este sans-serif es un respaldo */
+    font-family: 'Bebas Neue', sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    background-color: var(--color-primario);
+    color: var(--color-quinto);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(21, 23, 25, 0.85);
+    backdrop-filter: blur(8px);
+    padding: 20px 40px;
+    border-bottom: 1px solid white;
+    border-radius: 0 0 16px 16px;
+    color: white;
+}
+
+.header-titulo-logo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+#tituloWeb {
+    font-size: 32px;
+    margin: 0;
+}
+
+.UsuarioLogo img{
+    height: 50px;
+    width: auto;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+#loading {
+    color: #00bfff;
+    font-weight: bold;
+}
+
+.custom-btn {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.custom-btn:hover {
+    box-shadow: 0 0 10px var(--color-acento), 0 0 20px var(--color-acento);
+    color: #00bfff;
+    border-color: #00bfff;
+}

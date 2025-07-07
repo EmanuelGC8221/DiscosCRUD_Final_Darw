@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Préstamos</title>
+  <link rel="stylesheet" href="css/cass2.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Bebas Neue', sans-serif;
+      background: black;
+      color: white;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    video#background-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .form-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    .glass-box {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      padding: 20px;
+      width: 30%;
+      min-width: 250px;
+    }
+
+    .glass-box h2 {
+      text-align: center;
+      font-size: 24px;
+    }
+
+    .glass-box form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .glass-box label {
+      display: flex;
+      flex-direction: column;
+      font-size: 16px;
+    }
+
+    .glass-box input[type="text"],
+    .glass-box input[type="date"] {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 8px;
+    }
+
+    .glass-box input[type="submit"] {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid white;
+      background-color: transparent;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .glass-box input[type="submit"]:hover {
+      box-shadow: 0 0 10px #00bfff, 0 0 20px #00bfff;
+    }
+
+    table {
+      margin: 40px auto;
+      width: 90%;
+      border-collapse: collapse;
+      background-color: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      color: white;
+    }
+
+    th, td {
+      padding: 8px;
+      border: 1px solid white;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <video autoplay muted loop id="background-video">
+    <source src="media/u.mp4" type="video/mp4">
+    Tu navegador no soporta video.
+  </video>
+
+  <header class="header">
+    <div class="header-titulo-logo">
+      <h1 id="tituloWeb">Gestion de prestamos</h1>
+      <div class="UsuarioLogo">
+        <img src="img/usuario.png" alt="usuario">
+      </div>
+    </div>
+
+    <div class="header-buttons">
+      <a href="discosVERSION1.html"><button type="button" class="custom-btn">ir a Discos</button></a>
+      <button onclick="cargarPrestamos()" class="custom-btn">Cargar Prestadores</button>
+      <div id="loading" style="display: none; color: #00bfff;">Cargando...</div>
+    </div>
+  </header>
+
+  <div class="form-container">
+    <div class="glass-box">
+      <h2>Crear Prestador</h2>
+      <form id="form-crear" onsubmit="event.preventDefault(); crearPrestador();">
+        <label>Nombre: <input type="text" id="nombrePrest" required></label>
+        <label>Cédula: <input type="text" id="cedulaPrest" required></label>
+        <label>Contacto: <input type="text" id="contactoPrest" required></label>
+        <label>Fecha Préstamo: <input type="date" id="fechaPrest" required></label>
+        <label>Fecha Devolución: <input type="date" id="fechaDevol" required></label>
+        <label>Fecha límite devolución: <input type="date" id="fechaLimi"></label>
+        <input type="submit" value="Crear Prestador">
+      </form>
+    </div>
+
+    <div class="glass-box">
+      <h2>Actualizar Prestador</h2>
+      <form id="form-actualizar" onsubmit="event.preventDefault(); actualizarPrestador();">
+        <label>ID del prestador: <input type="text" id="actualizar-id" required></label>
+        <label>Nombre: <input type="text" id="actualizarNombre" required></label>
+        <label>Cédula: <input type="text" id="actualizarCedula" required></label>
+        <label>Contacto: <input type="text" id="actualizarContacto" required></label>
+        <label>Fecha Préstamo: <input type="date" id="actualizarPrestamo" required></label>
+        <label>Fecha Devolución: <input type="date" id="actualizarDevolucion" required></label>
+        <label>Fecha límite Devolución: <input type="date" id="actualizarLimite" required></label>
+        <input type="submit" value="Actualizar Prestador">
+      </form>
+    </div>
+
+    <div class="glass-box">
+      <h2>Eliminar Prestador</h2>
+      <form id="form-eliminar" onsubmit="event.preventDefault(); eliminarPorId();">
+        <label>ID del prestador a eliminar: <input type="text" id="eliminar-id" required></label>
+        <input type="submit" value="Eliminar Prestador">
+      </form>
+    </div>
+  </div>
+
+  <table id="tabla-prestamos">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Cédula</th>
+        <th>Nombre</th>
+        <th>Contacto</th>
+        <th>Fecha Préstamo</th>
+        <th>Fecha Devolución</th>
+        <th>Fecha Límite Devolución</th>
+      </tr>
+    </thead>
+    <tbody id="cuerpo-tabla"></tbody>
+  </table>
+
+  <div id="exito"></div>
+  <div id="error"></div>
+
+  <script>
+        const API_URL = 'https://68657bd45b5d8d0339814df6.mockapi.io/api/v1/personas';
+
+    function mostrarMensaje(tipo, mensaje) {
+      const div = document.getElementById(tipo);
+      div.textContent = mensaje;
+      setTimeout(() => div.textContent = '', 5000);
+    }
+    //cargar prestamos
+    async function cargarPrestamos() {
+      const tablaCuerpo = document.getElementById('cuerpo-tabla');
+      const errorDiv = document.getElementById('error');
+      const exitoDiv = document.getElementById('exito');
+      const loadingDiv = document.getElementById('loading');
+
+      tablaCuerpo.innerHTML = '';
+      errorDiv.textContent = '';
+      exitoDiv.textContent = '';
+      loadingDiv.style.display = 'block';
+
+      try {
+        const respuesta = await fetch(API_URL);
+        if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
+        const prestamos = await respuesta.json();
+
+        prestamos.forEach(prestamo => {
+          const fila = document.createElement('tr');
+          fila.innerHTML = `
+            <td>${prestamo.idPrestador}</td>
+            <td>${prestamo.cedula}</td>
+            <td>${prestamo.name}</td>
+            <td>${prestamo.contacto}</td>
+            <td>${prestamo.fechaPrestamo}</td>
+            <td>${prestamo.fechaDevolucion}</td>
+            <td>${prestamo.fechaLDevolucion}</td>
+          `;
+          tablaCuerpo.appendChild(fila);
+      });
+
+
+        mostrarMensaje('exito', 'Préstamos cargados correctamente');
+      } catch (error) {
+        mostrarMensaje('error', `Error al cargar préstamos: ${error.message}`);
+      } finally {
+        loadingDiv.style.display = 'none';
+      }
+    }
+    //crear prestador
+    async function crearPrestador() {
+      const errorDiv = document.getElementById('error');
+      const exitoDiv = document.getElementById('exito');
+      const loadingDiv = document.getElementById('loading');
+
+      errorDiv.textContent = '';
+      exitoDiv.textContent = '';
+      loadingDiv.style.display = 'block';
+
+      try {
+        const nuevoPrestamo = {
+          name: document.getElementById('nombrePrest').value.trim(),
+          cedula: document.getElementById('cedulaPrest').value.trim(),
+          contacto: document.getElementById('contactoPrest').value.trim(),
+          fechaPrestamo: document.getElementById('fechaPrest').value,
+          fechaDevolucion: document.getElementById('fechaDevol').value,
+          fechaLDevolucion: document.getElementById('fechaLimi').value
+        };
+
+        const respuesta = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(nuevoPrestamo)
+        });
+
+        if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
+
+        await cargarPrestamos();
+        document.getElementById('form-crear').reset();
+        mostrarMensaje('exito', 'Prestador creado correctamente');
+      } catch (error) {
+        mostrarMensaje('error', `Error al crear el prestador: ${error.message}`);
+      } finally {
+        loadingDiv.style.display = 'none';
+      }
+    }
+    //actualizar prestador
+    async function actualizarPrestador() {
+      const errorDiv = document.getElementById('error');
+      const exitoDiv = document.getElementById('exito');
+      const loadingDiv = document.getElementById('loading');
+
+      errorDiv.textContent = '';
+      exitoDiv.textContent = '';
+      loadingDiv.style.display = 'block';
+
+      try {
+        const idPrestador = document.getElementById('actualizar-id').value.trim();
+
+        const prestadorActualizado = {
+          name: document.getElementById('actualizarNombre').value.trim(),
+          cedula: document.getElementById('actualizarCedula').value.trim(),
+          contacto: document.getElementById('actualizarContacto').value.trim(),
+          fechaPrestamo: document.getElementById('actualizarPrestamo').value,
+          fechaDevolucion: document.getElementById('actualizarDevolucion').value,
+          fechaLDevolucion: document.getElementById('actualizarLimite').value
+        };
+
+        const respuesta = await fetch(`${API_URL}/${idPrestador}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(prestadorActualizado)
+        });
+
+        if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
+
+        await cargarPrestamos();
+        document.getElementById('form-actualizar').reset();
+        mostrarMensaje('exito', 'Prestador actualizado correctamente');
+      } catch (error) {
+        mostrarMensaje('error', `Error al actualizar el prestador: ${error.message}`);
+      } finally {
+        loadingDiv.style.display = 'none';
+      }
+    }
+    //eliminar prestador
+async function eliminarPorId() {
+  const id = document.getElementById('eliminar-id').value.trim();
+  if (!id) return mostrarMensaje('error', 'Debes ingresar un ID válido');
+
+
+  const errorDiv = document.getElementById('error');
+  const exitoDiv = document.getElementById('exito');
+  const loadingDiv = document.getElementById('loading');
+
+  errorDiv.textContent = '';
+  exitoDiv.textContent = '';
+  loadingDiv.style.display = 'block';
+
+  try {
+    const respuesta = await fetch(`${API_URL}/${id}`, {
+      method: 'DELETE'
+    });
+
+    if (!respuesta.ok) throw new Error(`ID no encontrado o error HTTP: ${respuesta.status}`);
+
+    await cargarPrestamos();
+    document.getElementById('form-eliminar').reset();
+    mostrarMensaje('exito', `Prestador con ID ${id} eliminado correctamente`);
+  } catch (error) {
+    mostrarMensaje('error', `Error al eliminar: ${error.message}`);
+  } finally {
+    loadingDiv.style.display = 'none';
+  }
+}
+  </script>
+
+</body>
+</html>

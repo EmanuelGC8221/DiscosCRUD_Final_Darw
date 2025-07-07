@@ -1,0 +1,159 @@
+<script>
+    const API_URL = 'https://68657bd45b5d8d0339814df6.mockapi.io/api/v1/personas';
+
+    function mostrarMensaje(tipo, mensaje) {
+      const div = document.getElementById(tipo);
+      div.textContent = mensaje;
+      setTimeout(() => div.textContent = '', 5000);
+    }
+    //cargar prestamos
+    async function cargarPrestamos() {
+      const tablaCuerpo = document.getElementById('cuerpo-tabla');
+      const errorDiv = document.getElementById('error');
+      const exitoDiv = document.getElementById('exito');
+      const loadingDiv = document.getElementById('loading');
+
+      tablaCuerpo.innerHTML = '';
+      errorDiv.textContent = '';
+      exitoDiv.textContent = '';
+      loadingDiv.style.display = 'block';
+
+      try {
+        const respuesta = await fetch(API_URL);
+        if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
+        const prestamos = await respuesta.json();
+
+        prestamos.forEach(prestamo => {
+          const fila = document.createElement('tr');
+          fila.innerHTML = `
+            <td>${prestamo.idPrestador}</td>
+            <td>${prestamo.cedula}</td>
+            <td>${prestamo.name}</td>
+            <td>${prestamo.contacto}</td>
+            <td>${prestamo.fechaPrestamo}</td>
+            <td>${prestamo.fechaDevolucion}</td>
+            <td>${prestamo.fechaLDevolucion}</td>
+          `;
+          tablaCuerpo.appendChild(fila);
+      });
+
+
+        mostrarMensaje('exito', 'Préstamos cargados correctamente');
+      } catch (error) {
+        mostrarMensaje('error', `Error al cargar préstamos: ${error.message}`);
+      } finally {
+        loadingDiv.style.display = 'none';
+      }
+    }
+    //crear prestador
+    async function crearPrestador() {
+      const errorDiv = document.getElementById('error');
+      const exitoDiv = document.getElementById('exito');
+      const loadingDiv = document.getElementById('loading');
+
+      errorDiv.textContent = '';
+      exitoDiv.textContent = '';
+      loadingDiv.style.display = 'block';
+
+      try {
+        const nuevoPrestamo = {
+          name: document.getElementById('nombrePrest').value.trim(),
+          cedula: document.getElementById('cedulaPrest').value.trim(),
+          contacto: document.getElementById('contactoPrest').value.trim(),
+          fechaPrestamo: document.getElementById('fechaPrest').value,
+          fechaDevolucion: document.getElementById('fechaDevol').value,
+          fechaLDevolucion: document.getElementById('fechaLimi').value
+        };
+
+        const respuesta = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(nuevoPrestamo)
+        });
+
+        if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
+
+        await cargarPrestamos();
+        document.getElementById('form-crear').reset();
+        mostrarMensaje('exito', 'Prestador creado correctamente');
+      } catch (error) {
+        mostrarMensaje('error', `Error al crear el prestador: ${error.message}`);
+      } finally {
+        loadingDiv.style.display = 'none';
+      }
+    }
+    //actualizar prestador
+    async function actualizarPrestador() {
+      const errorDiv = document.getElementById('error');
+      const exitoDiv = document.getElementById('exito');
+      const loadingDiv = document.getElementById('loading');
+
+      errorDiv.textContent = '';
+      exitoDiv.textContent = '';
+      loadingDiv.style.display = 'block';
+
+      try {
+        const idPrestador = document.getElementById('actualizar-id').value.trim();
+
+        const prestadorActualizado = {
+          name: document.getElementById('actualizarNombre').value.trim(),
+          cedula: document.getElementById('actualizarCedula').value.trim(),
+          contacto: document.getElementById('actualizarContacto').value.trim(),
+          fechaPrestamo: document.getElementById('actualizarPrestamo').value,
+          fechaDevolucion: document.getElementById('actualizarDevolucion').value,
+          fechaLDevolucion: document.getElementById('actualizarLimite').value
+        };
+
+        const respuesta = await fetch(`${API_URL}/${idPrestador}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(prestadorActualizado)
+        });
+
+        if (!respuesta.ok) throw new Error(`Error HTTP: ${respuesta.status}`);
+
+        await cargarPrestamos();
+        document.getElementById('form-actualizar').reset();
+        mostrarMensaje('exito', 'Prestador actualizado correctamente');
+      } catch (error) {
+        mostrarMensaje('error', `Error al actualizar el prestador: ${error.message}`);
+      } finally {
+        loadingDiv.style.display = 'none';
+      }
+    }
+    //eliminar prestador
+async function eliminarPorId() {
+  const id = document.getElementById('eliminar-id').value.trim();
+  if (!id) return mostrarMensaje('error', 'Debes ingresar un ID válido');
+
+
+  const errorDiv = document.getElementById('error');
+  const exitoDiv = document.getElementById('exito');
+  const loadingDiv = document.getElementById('loading');
+
+  errorDiv.textContent = '';
+  exitoDiv.textContent = '';
+  loadingDiv.style.display = 'block';
+
+  try {
+    const respuesta = await fetch(`${API_URL}/${id}`, {
+      method: 'DELETE'
+    });
+
+    if (!respuesta.ok) throw new Error(`ID no encontrado o error HTTP: ${respuesta.status}`);
+
+    await cargarPrestamos();
+    document.getElementById('form-eliminar').reset();
+    mostrarMensaje('exito', `Prestador con ID ${id} eliminado correctamente`);
+  } catch (error) {
+    mostrarMensaje('error', `Error al eliminar: ${error.message}`);
+  } finally {
+    loadingDiv.style.display = 'none';
+  }
+}
